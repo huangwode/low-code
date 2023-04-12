@@ -1,0 +1,5 @@
+
+// 简单展开收起过度效果
+@mixin collapse-transition($property: all,$time:0.2s,$timingFunction:ease){
+  transition: $property $time $timingFunction;
+}

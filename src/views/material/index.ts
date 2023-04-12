@@ -1,0 +1,31 @@
+export const materialList = [
+  {
+    component:'t-button',
+    name:'按钮',
+    id:1,
+    props:{
+      content:{
+        type:'string',
+        value:'按钮',
+        label:'按钮文字'
+      },
+
+    }
+  },
+  {
+    component:'t-input',
+    name:'输入框',
+    id:2,
+    props:{
+      value:{
+        type:'string',
+        label:'值'
+      },
+      placeholder:{
+        type:'string',
+        value:'请输入input值',
+        label:'占位符'
+      }
+    }
+  }
+]
