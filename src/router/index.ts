@@ -1,35 +1,27 @@
-import { createRouter, createWebHistory,  } from 'vue-router'
- 
+import { createRouter, createWebHistory } from 'vue-router'
+
 export const routes = [
-    {
-        path: '/',
-        redirect: '/low-code',
-    },
-    {
-      name: 'LowCode',
-      path: '/low-code',
-      component: () => import("../views/LowCode.vue")
-  },
-  {
-    name: 'Draggable',
-    path: '/draggable',
-    component: () => import("../views/Draggable.vue")
-}
- 
+	{
+		path: '/',
+		redirect: '/low-code',
+	},
+	{
+		name: 'LowCode',
+		path: '/low-code',
+		component: () => import('../views/LowCode.vue'),
+	},
 ]
- 
+
 const router = createRouter({
-    scrollBehavior: () => ({ left: 0, top: 0 }),
-    history: createWebHistory(),
-    routes,
-})
- 
- 
-router.beforeEach((to,from, next) => {
-    next()
+	scrollBehavior: () => ({ left: 0, top: 0 }),
+	history: createWebHistory(),
+	routes,
 })
 
-console.log('router=>',router)
- 
- 
+router.beforeEach((to, from, next) => {
+	next()
+})
+
+console.log('router=>', router)
+
 export default router

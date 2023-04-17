@@ -1,31 +1,17 @@
-export const materialList = [
-  {
-    component:'t-button',
-    name:'按钮',
-    id:1,
-    props:{
-      content:{
-        type:'string',
-        value:'按钮',
-        label:'按钮文字'
-      },
+export async function getMaterialList() {
+	const materialList: Array<any> = []
 
-    }
-  },
-  {
-    component:'t-input',
-    name:'输入框',
-    id:2,
-    props:{
-      value:{
-        type:'string',
-        label:'值'
-      },
-      placeholder:{
-        type:'string',
-        value:'请输入input值',
-        label:'占位符'
-      }
-    }
-  }
-]
+	const materialProps = import.meta.glob('./props/*.ts')
+	console.log('materialProps', materialProps)
+
+	for (const key in materialProps) {
+		console.log('key =>', key)
+		await materialProps[key]().then((mod: any) => {
+			// console.log('mod', mod)
+			materialList.push(mod.default)
+		})
+	}
+
+	// console.log('materialList ==>', materialList)
+	return materialList
+}
