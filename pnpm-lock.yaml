@@ -16,6 +16,7 @@ specifiers:
   prettier: ^2.8.7
   sass: ^1.60.0
   sass-loader: ^13.2.2
+  tdesign-icons-vue-next: ^0.1.8
   tdesign-vue-next: ^1.2.3
   typescript: ^4.9.3
   vite: ^4.2.0
@@ -31,6 +32,7 @@ dependencies:
   pinia: registry.npmmirror.com/pinia/2.0.33_hmuptsblhheur2tugfgucj7gc4
   sass: registry.npmmirror.com/sass/1.60.0
   sass-loader: registry.npmmirror.com/sass-loader/13.2.2_sass@1.60.0
+  tdesign-icons-vue-next: registry.npmmirror.com/tdesign-icons-vue-next/0.1.8_vue@3.2.47
   tdesign-vue-next: registry.npmmirror.com/tdesign-vue-next/1.2.3_vue@3.2.47
   vue: registry.npmmirror.com/vue/3.2.47
   vue-router: registry.npmmirror.com/vue-router/4.1.6_vue@3.2.47

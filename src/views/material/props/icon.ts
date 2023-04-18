@@ -13,6 +13,14 @@ export default {
 			default: 'add-rectangle',
 			label: '图标名称',
 			value: null,
+			componentType: 'exe-icon-select',
+			// props: {
+			// 	options: [
+			// 		{ label: 'circle', value: 'circle' },
+			// 		{ label: 'round', value: 'round' },
+			// 		{ label: 'square', value: 'square' },
+			// 	],
+			// },
 		},
 		// size: {
 		// 	type: 'string',

@@ -32,9 +32,17 @@ export default {
 			label: '圆角',
 			type: String as PropType<ExeImage['shape']>,
 			default: 'square' as ExeImage['shape'],
+			componentType: 'exe-select',
 			validator(val: ExeImage['shape']): boolean {
 				if (!val) return true
 				return ['circle', 'round', 'square'].includes(val)
+			},
+			props: {
+				options: [
+					{ label: 'circle', value: 'circle' },
+					{ label: 'round', value: 'round' },
+					{ label: 'square', value: 'square' },
+				],
 			},
 		},
 	},

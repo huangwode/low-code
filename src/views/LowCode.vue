@@ -4,7 +4,17 @@
 		<div class="left" :class="{ collapse: stencilCollapseStatus }">
 			<div v-for="(group, index) in materiaGroup" :key="index" class="material-group">
 				<div class="group-title">{{ group.title }}</div>
-				<draggable :list="group.data" ghost-class="ghost" :clone="cloneDraggeComponent" :force-fallback="true" :group="{ name: 'list', pull: 'clone', put: false }" :sort="false" item-key="id">
+				<draggable
+					:list="group.data"
+					ghost-class="ghost"
+					:clone="cloneDraggeComponent"
+					:force-fallback="true"
+					:group="{ name: 'list', pull: 'clone', put: false }"
+					:sort="false"
+					item-key="id"
+					@start="draggeStart"
+					@end="draggeEnd($event, group.data)"
+				>
 					<template #item="{ element }">
 						<t-tag class="materia-item">{{ element.componentConfig.componentName }}</t-tag>
 					</template>
@@ -23,8 +33,6 @@
 				:group="{ pull: 'clone', name: 'list' }"
 				:fallback-class="true"
 				:fallback-on-body="true"
-				@start="draggeStart"
-				@end="draggeEnd"
 			>
 				<template #item="{ element }">
 					<div class="component-item">
@@ -38,7 +46,7 @@
 				<t-form>
 					<t-form-item v-for="(item, index) in activePropsList" :key="index" :label="item.label">
 						<!-- <t-input v-model="item.default"></t-input> -->
-						<component :is="getPropsComponent(item)" v-model="item.default" />
+						<component :is="getPropsComponent(item)" v-model="item.default" v-bind="getPropsValue(item)" />
 					</t-form-item>
 				</t-form>
 			</div>
@@ -46,7 +54,7 @@
 	</div>
 </template>
 <script setup lang="ts">
-import { ref, reactive, computed } from 'vue'
+import { ref, reactive, computed, watch, nextTick } from 'vue'
 import { cloneDeep, toArray } from 'lodash-es'
 import draggable from 'vuedraggable'
 import { getMaterialList } from './material/index'
@@ -54,6 +62,7 @@ import ToggleIcon from '@/components/ToggleIcon.vue'
 import { COMPONENT_TYPE_NAME } from './material/material-types'
 
 import { componentsMap } from './material/enum'
+// import ExeIconSelect from './material/components/exe-icon-select.vue'
 import { uuid } from '@/utils'
 
 // 左侧收起状态
@@ -66,16 +75,17 @@ const materialProps = computed(() => (item: any) => {
 	keys.forEach(key => {
 		propsData[key] = props[key]?.default
 	})
-
-	console.log('propsData==>', propsData)
 	return propsData
 })
 
 const propList = ref<Array<any>>([])
 
+const draggeId = ref('')
+
 function cloneDraggeComponent(item: any) {
 	const cloneData = cloneDeep(item)
 	cloneData.id = uuid()
+	draggeId.value = cloneData.id
 	return cloneData
 }
 
@@ -108,12 +118,8 @@ async function initData() {
 
 initData()
 
-function draggeEnd(item: any) {
-	console.log(item)
-}
-function draggeStart(item: any) {
-	console.log('start', item)
-}
+function draggeEnd(e: any, data: any) {}
+function draggeStart() {}
 
 const getComponent = computed(() => (material: any) => {
 	const componentType = material.componentConfig.componentType
@@ -124,6 +130,11 @@ const getPropsComponent = computed(() => (prop: any) => {
 	console.log('prop=>', prop)
 	const componentType = prop.componentType
 	return componentType ? componentsMap[componentType] : 't-input'
+})
+
+const getPropsValue = computed(() => (prop: any) => {
+	const props = prop.props
+	return props ? props : {}
 })
 
 function handlePullComponent(item: any) {
@@ -145,9 +156,31 @@ function handleClickComponent(item: any) {
 }
 
 const activePropsList = computed(() => {
-	const props = activeComponent.value?.props
+	const props = (activeComponent.value as any)?.props
 	return toArray(props)
 })
+
+const widgetIds = computed(() => {
+	return widgetList.map((item: any) => item.id)
+})
+
+watch(
+	() => widgetIds.value,
+	val => {
+		nextTick(() => {
+			const component = widgetList.find((item: any) => {
+				return item.id === draggeId.value
+			})
+			console.log('component', component)
+			if (component) {
+				activeComponent.value = component
+			}
+		})
+	},
+	{
+		deep: true,
+	},
+)
 </script>
 <style lang="scss" scoped>
 // 简单展开收起过度效果

@@ -15,3 +15,14 @@ export async function getMaterialList() {
 	// console.log('materialList ==>', materialList)
 	return materialList
 }
+
+export async function registerGlobalComponent(app: any) {
+	const materialComponents = import.meta.glob('./components/*.vue')
+	for (const key in materialComponents) {
+		await materialComponents[key]().then((mod: any) => {
+			const fileName = key.match(/[^/]+\.vue$/)![0]
+			const componentName = fileName.replace(/\.vue$/, '')
+			app.component(componentName, mod.default)
+		})
+	}
+}
