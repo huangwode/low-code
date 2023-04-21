@@ -10,31 +10,35 @@ export default {
 	props: {
 		value: {
 			type: 'string',
-			default: '',
+			value: '',
 			label: '值',
-			value: null,
 		},
 		placeholder: {
 			type: 'string',
-			default: '',
+			value: '',
 			label: '占位符',
-			value: null,
 		},
 		align: {
 			type: String as PropType<ExeInput['align']>,
-			default: 'fill' as ExeInput['align'],
+			value: 'left' as ExeInput['align'],
 			validator(val: ExeInput['align']): boolean {
 				if (!val) return true
 				return ['left', 'center', 'right'].includes(val)
 			},
 			label: '对齐方式',
-			value: null,
+			componentType: 'exe-select',
+			props: {
+				options: [
+					{ label: '左对齐', value: 'left' },
+					{ label: '中间对齐', value: 'center' },
+					{ label: '右对齐', value: 'right' },
+				],
+			},
 		},
 		clearable: {
 			type: Boolean,
-			default: false,
+			value: false,
 			label: '清空',
-			value: null,
 			componentType: 'exe-switch',
 		},
 	},

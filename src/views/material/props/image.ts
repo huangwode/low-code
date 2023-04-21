@@ -11,17 +11,16 @@ export default {
 	props: {
 		// alt: {
 		// 	type: 'string',
-		// 	default: '',
+		// 	value: '',
 		// },
 		src: {
 			type: 'string',
-			default: 'https://tdesign.gtimg.com/demo/demo-image-2.png',
+			value: 'https://tdesign.gtimg.com/demo/demo-image-2.png',
 			label: '图片路径',
-			value: null,
 		},
 		// fit: {
 		// 	type: String as PropType<ExeImage['fit']>,
-		// 	default: 'fill' as ExeImage['fit'],
+		// 	value: 'fill' as ExeImage['fit'],
 		// 	validator(val: ExeImage['fit']): boolean {
 		// 		if (!val) return true
 		// 		return ['contain', 'cover', 'fill', 'none', 'scale-down'].includes(val)
@@ -31,7 +30,7 @@ export default {
 		shape: {
 			label: '圆角',
 			type: String as PropType<ExeImage['shape']>,
-			default: 'square' as ExeImage['shape'],
+			value: 'square' as ExeImage['shape'],
 			componentType: 'exe-select',
 			validator(val: ExeImage['shape']): boolean {
 				if (!val) return true

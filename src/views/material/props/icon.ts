@@ -10,9 +10,8 @@ export default {
 	props: {
 		name: {
 			type: 'string',
-			default: 'add-rectangle',
+			value: 'add-rectangle',
 			label: '图标名称',
-			value: null,
 			componentType: 'exe-icon-select',
 			// props: {
 			// 	options: [
@@ -22,12 +21,19 @@ export default {
 			// 	],
 			// },
 		},
-		// size: {
-		// 	type: 'string',
-		// 	default: '',
-		// 	label: '尺寸',
-		// value:null,
-		// },
+		size: {
+			type: 'string',
+			value: '',
+			label: '尺寸',
+			componentType: 'exe-select',
+			props: {
+				options: [
+					{ label: '小', value: 'small' },
+					{ label: '中等', value: 'medium' },
+					{ label: '大', value: 'large' },
+				],
+			},
+		},
 
 		// url: {
 		// 	type: [String, Array] as PropType<ExeIcon['url']>,

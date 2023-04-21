@@ -1,13 +1,15 @@
+import { EControl, ENode, EPage, EProps } from './material-types'
+import { cloneDeep, omit } from 'lodash-es'
+import { uuid } from '@/utils'
+
 export async function getMaterialList() {
-	const materialList: Array<any> = []
+	const materialList: Array<EControl> = []
 
 	const materialProps = import.meta.glob('./props/*.ts')
 	console.log('materialProps', materialProps)
 
 	for (const key in materialProps) {
-		console.log('key =>', key)
 		await materialProps[key]().then((mod: any) => {
-			// console.log('mod', mod)
 			materialList.push(mod.default)
 		})
 	}
@@ -25,4 +27,30 @@ export async function registerGlobalComponent(app: any) {
 			app.component(componentName, mod.default)
 		})
 	}
+}
+
+// 根据物料创建node组件
+export function createEnode(material: EControl): ENode {
+	const cloneData = cloneDeep(material)
+	const { componentConfig } = cloneData
+	const { componentName: name, componentType: type } = componentConfig
+	const id = uuid()
+
+	return {
+		id,
+		name,
+		type,
+		...omit(cloneData, ['componentConfig']),
+	}
+}
+
+// 创建page数据
+export function createEPage(nodes: ENode[], props: Omit<EPage, 'id' | 'nodes'>): EPage {
+	const id = uuid()
+	const page = {
+		id,
+		nodes,
+		...props,
+	}
+	return page
 }

@@ -12,34 +12,30 @@ export default {
 	props: {
 		block: {
 			type: 'boolean',
-			default: false,
+			value: false,
 			label: '是否为块级元素',
-			value: null,
 			componentType: 'exe-switch',
 		},
 		content: {
 			type: 'string',
-			default: '按钮',
+			value: '按钮',
 			label: '按钮内容',
-			value: null,
 		},
 		disabled: {
 			type: 'boolean',
-			default: false,
+			value: false,
 			label: '是否禁用',
-			value: null,
 			componentType: 'exe-switch',
 		},
 		ghost: {
 			type: 'boolean',
-			default: false,
+			value: false,
 			label: '幽灵模式',
-			value: null,
 			componentType: 'exe-switch',
 		},
 		// size: {
 		// 	type: String as PropType<ExeButton['size']>,
-		// 	default: 'fill' as ExeButton['size'],
+		// 	value: 'fill' as ExeButton['size'],
 		// 	validator(val: ExeButton['size']): boolean {
 		// 		if (!val) return true
 		// 		return ['left', 'center', 'right'].includes(val)

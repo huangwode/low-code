@@ -1,20 +1,19 @@
+<!-- eslint-disable vue/valid-v-model -->
 <template>
-	<h1 class="header">低代码</h1>
+	<h1 class="header" :style="getPageStyle">
+		<span>{{ pageConfig.title }}</span>
+		<div class="tool">
+			<t-space>
+				<t-button @click="openPageConfig">页面设置</t-button>
+				<t-button @click="savePage">保存</t-button>
+			</t-space>
+		</div>
+	</h1>
 	<div class="code-container">
 		<div class="left" :class="{ collapse: stencilCollapseStatus }">
 			<div v-for="(group, index) in materiaGroup" :key="index" class="material-group">
 				<div class="group-title">{{ group.title }}</div>
-				<draggable
-					:list="group.data"
-					ghost-class="ghost"
-					:clone="cloneDraggeComponent"
-					:force-fallback="true"
-					:group="{ name: 'list', pull: 'clone', put: false }"
-					:sort="false"
-					item-key="id"
-					@start="draggeStart"
-					@end="draggeEnd($event, group.data)"
-				>
+				<draggable :list="group.data" :clone="cloneDraggeComponent" :force-fallback="true" :group="{ name: 'list', pull: 'clone', put: false }" :sort="false" item-key="id" animation="300">
 					<template #item="{ element }">
 						<t-tag class="materia-item">{{ element.componentConfig.componentName }}</t-tag>
 					</template>
@@ -36,7 +35,13 @@
 			>
 				<template #item="{ element }">
 					<div class="component-item">
-						<component :is="getComponent(element)" v-bind="materialProps(element)" @click="handleClickComponent(element)" @focus="handleClickComponent(element)" />
+						<component
+							:is="getComponent(element)"
+							v-bind="materialProps(element)"
+							@change="changeValue($event, element)"
+							@click="handleClickComponent(element)"
+							@focus="handleClickComponent(element)"
+						/>
 					</div>
 				</template>
 			</draggable>
@@ -45,48 +50,53 @@
 			<div class="">
 				<t-form>
 					<t-form-item v-for="(item, index) in activePropsList" :key="index" :label="item.label">
-						<!-- <t-input v-model="item.default"></t-input> -->
-						<component :is="getPropsComponent(item)" v-model="item.default" v-bind="getPropsValue(item)" />
+						<component :is="getPropsComponent(item)" v-model="item.value" v-bind="getPropsValue(item)" />
 					</t-form-item>
 				</t-form>
 			</div>
 		</div>
 	</div>
+
+	<page-config v-model="pageConfigFlag" :data="pageConfig" />
 </template>
 <script setup lang="ts">
 import { ref, reactive, computed, watch, nextTick } from 'vue'
 import { cloneDeep, toArray } from 'lodash-es'
 import draggable from 'vuedraggable'
-import { getMaterialList } from './material/index'
+import { createEPage, createEnode, getMaterialList } from './material/index'
 import ToggleIcon from '@/components/ToggleIcon.vue'
-import { COMPONENT_TYPE_NAME } from './material/material-types'
+import PageConfig from '@/components/PageConfig.vue'
+import { COMPONENT_TYPE_NAME, ControlGroup, EControl, ENode, EPage, EProps } from './material/material-types'
 
 import { componentsMap } from './material/enum'
-// import ExeIconSelect from './material/components/exe-icon-select.vue'
-import { uuid } from '@/utils'
+import { MessagePlugin } from 'tdesign-vue-next'
+
+const pageConfigFlag = ref(false)
+function openPageConfig() {
+	pageConfigFlag.value = true
+}
 
 // 左侧收起状态
 const stencilCollapseStatus = ref(false)
-const materialProps = computed(() => (item: any) => {
+const materialProps = computed(() => (item: EProps) => {
 	const props = item.props
 
 	const keys = Object.keys(props)
 	const propsData = {}
 	keys.forEach(key => {
-		propsData[key] = props[key]?.default
+		propsData[key] = props[key]?.value
 	})
 	return propsData
 })
 
-const propList = ref<Array<any>>([])
+const propList = ref<Array<EProps>>([])
 
 const draggeId = ref('')
 
-function cloneDraggeComponent(item: any) {
-	const cloneData = cloneDeep(item)
-	cloneData.id = uuid()
-	draggeId.value = cloneData.id
-	return cloneData
+function cloneDraggeComponent(item: EControl) {
+	const enode = createEnode(item)
+	draggeId.value = enode.id
+	return enode
 }
 
 async function handlePropsGroup() {
@@ -107,71 +117,78 @@ async function handlePropsGroup() {
 	return data
 }
 
-const materiaGroup = ref<Array<any>>([])
+const materiaGroup = ref<ControlGroup>()
 async function initData() {
 	const groupData = await handlePropsGroup()
 
-	materiaGroup.value = groupData as Array<any>
-
-	console.log('groupData =>', groupData)
+	materiaGroup.value = groupData as ControlGroup
 }
 
 initData()
 
-function draggeEnd(e: any, data: any) {}
-function draggeStart() {}
-
-const getComponent = computed(() => (material: any) => {
-	const componentType = material.componentConfig.componentType
+const getComponent = computed(() => (node: ENode) => {
+	const componentType = node.type
 	return componentsMap[componentType]
 })
 
-const getPropsComponent = computed(() => (prop: any) => {
-	console.log('prop=>', prop)
+function changeValue(val: unknown, node: ENode) {
+	const componentType = node.type
+	// 简单实现输入框输入
+	if (componentType === 'exe-input' && node.props) {
+		node.props.value.value = val
+	}
+}
+
+const getPropsComponent = computed(() => (prop: EProps) => {
 	const componentType = prop.componentType
 	return componentType ? componentsMap[componentType] : 't-input'
 })
 
-const getPropsValue = computed(() => (prop: any) => {
+const getPropsValue = computed(() => (prop: EProps) => {
 	const props = prop.props
 	return props ? props : {}
 })
 
-function handlePullComponent(item: any) {
-	console.log('pull=>', item)
-}
-
-console.log('materiaGroup =>', materiaGroup)
-
 const cloneMaterialList = cloneDeep(getMaterialList())
-
-console.log('cloneMaterialList =>', cloneMaterialList)
 
 const widgetList = reactive([])
 const activeComponent = ref({})
 
-function handleClickComponent(item: any) {
-	console.log('item==>', item)
+function handleClickComponent(item: ENode) {
 	activeComponent.value = item
 }
 
 const activePropsList = computed(() => {
-	const props = (activeComponent.value as any)?.props
+	const props = (activeComponent.value as ENode)?.props
 	return toArray(props)
 })
 
 const widgetIds = computed(() => {
-	return widgetList.map((item: any) => item.id)
+	return widgetList.map((item: ENode) => item.id)
 })
+
+const pageConfig = reactive<Omit<EPage, 'id' | 'nodes'>>({
+	title: '低代码实战',
+	style: { color: '#0052d9' },
+})
+
+const getPageStyle = computed(() => {
+	return pageConfig.style || {}
+})
+
+function savePage() {
+	const pageData = createEPage(widgetList, pageConfig)
+	MessagePlugin.success('保存成功')
+	console.log('页面数据=>', pageData)
+}
 
 watch(
 	() => widgetIds.value,
 	val => {
 		nextTick(() => {
-			const component = widgetList.find((item: any) => {
+			const component = widgetList.find((item: ENode) => {
 				return item.id === draggeId.value
 			})
-			console.log('component', component)
 			if (component) {
 				activeComponent.value = component
 			}
@@ -187,6 +204,28 @@ watch(
 @mixin collapse-transition($property: all, $time: 0.2s, $timingFunction: ease) {
 	transition: $property $time $timingFunction;
 }
+.css-scrollbar {
+	overflow: auto;
+	scrollbar-color: var(--td-scrollbar-color);
+	scrollbar-width: thin;
+	&.hide-scrollbar::-webkit-scrollbar {
+		display: none;
+	}
+	&::-webkit-scrollbar {
+		width: 6px;
+		height: 6px;
+	}
+	&::-webkit-scrollbar-thumb {
+		border: 0px solid transparent;
+		background-clip: content-box;
+		background-color: var(--td-scrollbar-color);
+		border-radius: 11px;
+	}
+	&::-webkit-scrollbar-thumb:vertical:hover,
+	&::-webkit-scrollbar-thumb:horizontal:hover {
+		background-color: var(--td-scrollbar-hover-color);
+	}
+}
 .header {
 	margin-bottom: 12px;
 	padding: 10px;
@@ -200,13 +239,16 @@ watch(
 	top: 0;
 	z-index: 2;
 	font-weight: bold;
+	.tool {
+		float: right;
+	}
 }
 .code-container {
 	width: 100%;
 	height: 100%;
 	display: flex;
 	background-color: #f2f3f6;
-	padding-top: 46px;
+	padding-top: 60px;
 	.left {
 		width: 280px;
 		padding: 20px;
@@ -231,6 +273,8 @@ watch(
 		margin-right: 8px;
 		background-color: #fff;
 		padding: 20px;
+		overflow: auto;
+		@extend .css-scrollbar;
 	}
 	.right {
 		width: 300px;
@@ -257,6 +301,24 @@ watch(
 }
 .ghost {
 	width: 100% !important;
-	border: 2px solid #2ba471 !important;
+	height: 100%;
+	box-sizing: border-box;
+	// border: 2px solid #2ba471 !important;
+	position: relative;
+	flex: 0 0 100%;
+	max-width: 100%;
+	padding: 0;
+	overflow: hidden;
+
+	&::after {
+		position: absolute;
+		top: 0;
+		left: 0;
+		z-index: 10;
+		width: 100%;
+		height: 5px;
+		content: ' ';
+		background: #618dff;
+	}
 }
 </style>
