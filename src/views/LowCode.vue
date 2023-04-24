@@ -11,13 +11,15 @@
 	</h1>
 	<div class="code-container">
 		<div class="left" :class="{ collapse: stencilCollapseStatus }">
-			<div v-for="(group, index) in materiaGroup" :key="index" class="material-group">
-				<div class="group-title">{{ group.title }}</div>
-				<draggable :list="group.data" :clone="cloneDraggeComponent" :force-fallback="true" :group="{ name: 'list', pull: 'clone', put: false }" :sort="false" item-key="id" animation="300">
-					<template #item="{ element }">
-						<t-tag class="materia-item">{{ element.componentConfig.componentName }}</t-tag>
-					</template>
-				</draggable>
+			<div class="group-container">
+				<div v-for="(group, index) in materiaGroup" :key="index" class="material-group">
+					<div class="group-title">{{ group.title }}</div>
+					<draggable :list="group.data" :clone="cloneDraggeComponent" :force-fallback="true" :group="{ name: 'list', pull: 'clone', put: false }" :sort="false" item-key="id" animation="300">
+						<template #item="{ element }">
+							<t-tag class="materia-item">{{ element.componentConfig.componentName }}</t-tag>
+						</template>
+					</draggable>
+				</div>
 			</div>
 
 			<toggle-icon v-model="stencilCollapseStatus" />
@@ -34,7 +36,7 @@
 				:fallback-on-body="true"
 			>
 				<template #item="{ element }">
-					<div class="component-item">
+					<div class="component-item" :class="{ active: element.id === activeComponent?.id }">
 						<component
 							:is="getComponent(element)"
 							v-bind="materialProps(element)"
@@ -152,7 +154,7 @@ const getPropsValue = computed(() => (prop: EProps) => {
 const cloneMaterialList = cloneDeep(getMaterialList())
 
 const widgetList = reactive([])
-const activeComponent = ref({})
+const activeComponent = ref<ENode>()
 
 function handleClickComponent(item: ENode) {
 	activeComponent.value = item
@@ -183,7 +185,7 @@ function savePage() {
 }
 
 watch(
-	() => widgetIds.value,
+	() => widgetIds.value.length,
 	val => {
 		nextTick(() => {
 			const component = widgetList.find((item: ENode) => {
@@ -228,7 +230,7 @@ watch(
 }
 .header {
 	margin-bottom: 12px;
-	padding: 10px;
+	padding: 18px;
 	position: absolute;
 	width: 100%;
 	padding-right: 33px;
@@ -239,8 +241,12 @@ watch(
 	top: 0;
 	z-index: 2;
 	font-weight: bold;
+	display: flex;
+	align-items: center;
+	justify-content: center;
 	.tool {
-		float: right;
+		position: absolute;
+		right: 10px;
 	}
 }
 .code-container {
@@ -251,7 +257,6 @@ watch(
 	padding-top: 60px;
 	.left {
 		width: 280px;
-		padding: 20px;
 		margin-right: 8px;
 		background-color: #fff;
 		@include collapse-transition(width);
@@ -260,11 +265,16 @@ watch(
 			width: 0px;
 			padding: 0;
 		}
-		.material-group {
-			padding-bottom: 12px;
-			.group-title {
-				font-weight: bold;
-				margin-bottom: 20px;
+		.group-container {
+			padding: 20px;
+			box-sizing: border-box;
+			width: 280px;
+			.material-group {
+				padding-bottom: 12px;
+				.group-title {
+					font-weight: bold;
+					margin-bottom: 20px;
+				}
 			}
 		}
 	}
@@ -297,6 +307,10 @@ watch(
 	width: 100%;
 	.component-item {
 		margin-bottom: 12px !important;
+		box-sizing: border-box;
+		&.active {
+			border: 2px solid #618dff;
+		}
 	}
 }
 .ghost {

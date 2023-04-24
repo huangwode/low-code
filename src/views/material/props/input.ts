@@ -38,7 +38,7 @@ export default {
 		clearable: {
 			type: Boolean,
 			value: false,
-			label: '清空',
+			label: '是否可清空',
 			componentType: 'exe-switch',
 		},
 	},
