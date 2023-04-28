@@ -59,8 +59,10 @@ export interface ExeImage {
 	src?: string
 	alt?: string
 	fit?: FitOptions
-	shape: ShapeOptions
+	shape?: ShapeOptions
 	id?: number | string
+	width?: number
+	height?: number
 	componentType: COMPONENTTYPE.layout
 }
 
@@ -84,4 +86,9 @@ export interface ExeButton {
 	size?: SizeOptions
 	theme?: ThemeOptions
 	variant?: VariantOptions
+}
+
+export interface ValidateErrorData {
+	result: boolean
+	message?: string
 }

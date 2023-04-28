@@ -50,8 +50,14 @@
 		</div>
 		<div class="right">
 			<div class="">
-				<t-form>
-					<t-form-item v-for="(item, index) in activePropsList" :key="index" :label="item.label">
+				<!-- <t-form>
+					<t-form-item v-for="(item, index) in activePropsList"  :key="index" :label="item.label">
+						<component :is="getPropsComponent(item)" v-model="item.value" v-bind="getPropsValue(item)" />
+					</t-form-item>
+				</t-form> -->
+
+				<t-form :data="activePropsData">
+					<t-form-item v-for="(item, key) in activePropsData" :key="key" :rules="getPropsRules(item)" :name="key + '.value'" :label="item.label">
 						<component :is="getPropsComponent(item)" v-model="item.value" v-bind="getPropsValue(item)" />
 					</t-form-item>
 				</t-form>
@@ -160,11 +166,31 @@ function handleClickComponent(item: ENode) {
 	activeComponent.value = item
 }
 
-const activePropsList = computed(() => {
+// 编辑属性数组
+// const activePropsList = computed(() => {
+// 	const props = (activeComponent.value as ENode)?.props
+// 	return toArray(props)
+// })
+
+// 右侧编辑属性data
+const activePropsData = computed(() => {
 	const props = (activeComponent.value as ENode)?.props
-	return toArray(props)
+	return props || {}
 })
 
+// 获取编辑属性校验规则
+const getPropsRules = computed(() => (prop: EProps) => {
+	if (prop.validator) {
+		return [
+			{
+				validator: (value: unknown) => {
+					return prop.validator(value)
+				},
+			},
+		]
+	}
+	return []
+})
 const widgetIds = computed(() => {
 	return widgetList.map((item: ENode) => item.id)
 })
