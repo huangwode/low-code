@@ -25,7 +25,7 @@ export default {
 						message: '请输入图片地址',
 					}
 				}
-				const reg = /^(http(s?)?:\/\/)?[^\s]+\.(jpg|jpeg|png|gif|bmp|tif|tiff|webp|svg|jfif|ico|xbm|dib|heif|bat|bpg|brk|jpe|jif|jfi|jp2|jpx|jpm)$/g
+				const reg = /^https?:\/\/(?:[a-z0-9\-]+\.)+[a-z]{2,}(?:\/[^\/#?]+)*[\/#?]?[^#]*$/i
 
 				const result = reg.test(src)
 				console.log('图片地址=>', src)

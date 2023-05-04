@@ -2,7 +2,7 @@
 	<t-upload
 		ref="uploadRef1"
 		v-model="uploadImg"
-		action="https://service-bv448zsw-1257786608.gz.apigw.tencentcs.com/api/upload-demo"
+		action="https://eftapi.exexm.com/api/v1/editor/upload"
 		:disabled="false"
 		auto-upload
 		theme="image"
@@ -60,7 +60,8 @@ function handleFail(value: any) {
 
 function handleSuccess(context: SuccessContext) {
 	console.log('context=>', context)
-	const url = context.response.url
+	const data = context.response.data || {}
+	const url = data.url
 	emits('update:modelValue', url)
 }
 </script>
