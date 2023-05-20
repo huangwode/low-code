@@ -10,6 +10,11 @@ export const routes = [
 		path: '/low-code',
 		component: () => import('../views/LowCode.vue'),
 	},
+	{
+		name: 'Preview',
+		path: '/preview',
+		component: () => import('../views/Preview.vue'),
+	},
 ]
 
 const router = createRouter({

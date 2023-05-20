@@ -1,4 +1,4 @@
-import { ExeButton, SizeOptions, COMPONENTTYPE } from '../material-types'
+import { ExeButton, SizeOptions, COMPONENTTYPE, Eaction } from '../material-types'
 import { PropType } from 'vue'
 
 type size = keyof SizeOptions
@@ -8,6 +8,11 @@ export default {
 		group: COMPONENTTYPE.base,
 		componentName: '按钮',
 		componentType: 'exe-button',
+	},
+	actions: {
+		type: 'click' as Eaction['type'],
+		// args: [] as Eaction['args'],
+		events: [] as Eaction['events'],
 	},
 	props: {
 		block: {

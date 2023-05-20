@@ -5,6 +5,19 @@ export type VariantOptions = 'base' | 'outline' | 'dashed' | 'text'
 export type FitOptions = 'contain' | 'cover' | 'fill' | 'none' | 'scale-down'
 export type ShapeOptions = 'circle' | 'round' | 'square'
 
+type TriggerType = 'alert' | 'windowOpen'
+type EventType = 'click'
+export interface Eevent {
+	args: any[]
+	triggerType: TriggerType
+}
+export interface Eaction {
+	type: EventType
+	args?: any[]
+	to?: string
+	from?: string
+	events: Eevent[]
+}
 export enum COMPONENTTYPE {
 	input = 'input',
 	layout = 'layout',
@@ -39,6 +52,7 @@ export interface ENode {
 	children?: ENode[]
 	style?: Record<string, string>
 	class?: string[]
+	actions?: Eaction
 }
 export interface EPage {
 	readonly id: string

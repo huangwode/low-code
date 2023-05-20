@@ -5,6 +5,7 @@
 		<div class="tool">
 			<t-space>
 				<t-button @click="openPageConfig">页面设置</t-button>
+				<t-button @click="handlePreview">预览</t-button>
 				<t-button @click="savePage">保存</t-button>
 			</t-space>
 		</div>
@@ -49,18 +50,40 @@
 			</draggable>
 		</div>
 		<div class="right">
-			<div class="">
-				<!-- <t-form>
-					<t-form-item v-for="(item, index) in activePropsList"  :key="index" :label="item.label">
-						<component :is="getPropsComponent(item)" v-model="item.value" v-bind="getPropsValue(item)" />
-					</t-form-item>
-				</t-form> -->
+			<t-tabs v-model="tabVal">
+				<t-tab-panel :value="1" label="属性编辑"></t-tab-panel>
+				<t-tab-panel :value="2" label="事件"></t-tab-panel>
+			</t-tabs>
 
+			<div v-if="tabVal === 1">
 				<t-form :data="activePropsData">
 					<t-form-item v-for="(item, key) in activePropsData" :key="key" :rules="getPropsRules(item)" :name="key + '.value'" :label="item.label">
 						<component :is="getPropsComponent(item)" v-model="item.value" v-bind="getPropsValue(item)" />
 					</t-form-item>
 				</t-form>
+			</div>
+
+			<!-- 事件 -->
+			<div v-if="tabVal === 2">
+				<!-- <t-button @click="logData">test</t-button> -->
+				<!-- 简单实现 alert 和 window.open -->
+				<div v-if="activeActions">
+					<t-button style="margin-top: 12px" @click="addEvent">增加事件</t-button>
+					<t-form class="actions-list">
+						<t-card v-for="(item, index) in activeActions.events" :key="index" class="action-item" bordered>
+							<template #actions>
+								<a href="javascript:void(0)" @click="delEvent(index)">删除</a>
+							</template>
+							<t-form-item label="触发类型">
+								<t-select v-model="item.triggerType" :options="triggerOptions" />
+							</t-form-item>
+
+							<t-form-item :label="item.triggerType === 'alert' ? '消息内容' : '页面地址'">
+								<t-input v-model="item.args[0]" />
+							</t-form-item>
+						</t-card>
+					</t-form>
+				</div>
 			</div>
 		</div>
 	</div>
@@ -74,16 +97,53 @@ import draggable from 'vuedraggable'
 import { createEPage, createEnode, getMaterialList } from './material/index'
 import ToggleIcon from '@/components/ToggleIcon.vue'
 import PageConfig from '@/components/PageConfig.vue'
-import { COMPONENT_TYPE_NAME, ControlGroup, EControl, ENode, EPage, EProps } from './material/material-types'
+import { COMPONENT_TYPE_NAME, ControlGroup, EControl, Eevent, ENode, EPage, EProps } from './material/material-types'
 
 import { componentsMap } from './material/enum'
 import { MessagePlugin } from 'tdesign-vue-next'
+import { useRouter } from 'vue-router'
+const router = useRouter()
+
+const tabVal = ref(1)
+
+// 测试
+function logData() {
+	console.log('widgetList =>', widgetList)
+	console.log('active com=>', activeComponent.value)
+}
+
+const triggerOptions = [
+	{ label: '消息提示', value: 'alert' },
+	{ label: '打开窗口', value: 'windowOpen' },
+]
+const defaultEventData: Eevent = {
+	args: [],
+	triggerType: 'alert',
+}
+
+function addEvent() {
+	;(activeComponent.value as ENode).actions?.events.push(cloneDeep(defaultEventData))
+}
+
+function delEvent(index: number) {
+	;(activeComponent.value as ENode).actions?.events.splice(index, 1)
+}
 
 const pageConfigFlag = ref(false)
 function openPageConfig() {
 	pageConfigFlag.value = true
 }
 
+// 预览
+function handlePreview() {
+	pageData.value = createEPage(widgetList, pageConfig)
+	localStorage.setItem('lowCodePageData', JSON.stringify(pageData.value))
+
+	const url = router.resolve({ name: 'Preview' })
+	// router.push({ name: 'Preview' })
+	console.log('url=>', url)
+	window.open(url.href)
+}
 // 左侧收起状态
 const stencilCollapseStatus = ref(false)
 const materialProps = computed(() => (item: EProps) => {
@@ -178,6 +238,11 @@ const activePropsData = computed(() => {
 	return props || {}
 })
 
+// 右侧事件编辑 暂时只支持点击事件
+const activeActions = computed(() => {
+	const actions = (activeComponent.value as ENode)?.actions
+	return actions || null
+})
 // 获取编辑属性校验规则
 const getPropsRules = computed(() => (prop: EProps) => {
 	if (prop.validator) {
@@ -203,6 +268,7 @@ const pageConfig = reactive<Omit<EPage, 'id' | 'nodes'>>({
 const getPageStyle = computed(() => {
 	return pageConfig.style || {}
 })
+const pageData = ref({})
 
 function savePage() {
 	const pageData = createEPage(widgetList, pageConfig)
@@ -359,6 +425,15 @@ watch(
 		height: 5px;
 		content: ' ';
 		background: #618dff;
+	}
+}
+
+.actions-list {
+	margin-top: 12px;
+	margin-bottom: 12px;
+
+	.action-item {
+		margin-bottom: 12px;
 	}
 }
 </style>
