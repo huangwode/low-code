@@ -15,7 +15,14 @@ export default {
 		events: [] as Eaction['events'],
 	},
 	props: {
+		visible: {
+			type: 'boolean',
+			value: true,
+			label: '是否显示',
+			componentType: 'exe-switch',
+		},
 		block: {
+			visible: '${visible == true}',
 			type: 'boolean',
 			value: false,
 			label: '是否为块级元素',
@@ -25,26 +32,21 @@ export default {
 			type: 'string',
 			value: '按钮',
 			label: '按钮内容',
+			visible: '${visible == true}',
 		},
 		disabled: {
 			type: 'boolean',
 			value: false,
 			label: '是否禁用',
 			componentType: 'exe-switch',
+			visible: '${visible == true}',
 		},
 		ghost: {
 			type: 'boolean',
 			value: false,
 			label: '幽灵模式',
 			componentType: 'exe-switch',
+			visible: '${visible == true}',
 		},
-		// size: {
-		// 	type: String as PropType<ExeButton['size']>,
-		// 	value: 'fill' as ExeButton['size'],
-		// 	validator(val: ExeButton['size']): boolean {
-		// 		if (!val) return true
-		// 		return ['left', 'center', 'right'].includes(val)
-		// 	},
-		// },
 	},
 }

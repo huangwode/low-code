@@ -5,15 +5,15 @@ export type VariantOptions = 'base' | 'outline' | 'dashed' | 'text'
 export type FitOptions = 'contain' | 'cover' | 'fill' | 'none' | 'scale-down'
 export type ShapeOptions = 'circle' | 'round' | 'square'
 
-type TriggerType = 'alert' | 'windowOpen'
-type EventType = 'click'
+export type TriggerType = 'alert' | 'windowOpen' | 'doSearch'
+export type EventType = 'click' | 'search'
 export interface Eevent {
 	args: any[]
 	triggerType: TriggerType
 }
 export interface Eaction {
 	type: EventType
-	args?: any[]
+	// args?: any[]
 	to?: string
 	from?: string
 	events: Eevent[]

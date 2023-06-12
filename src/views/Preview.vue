@@ -86,7 +86,11 @@ async function executeActions(actions: Eaction['events']) {
 
 		console.log('currrentFun=>', currrentFun)
 
-		await (currrentFun as any).apply(null, currentAction?.args)
+		// 表单搜索
+		if (currrentFun === 'doSearch') {
+		} else {
+			await (currrentFun as any).apply(null, currentAction?.args)
+		}
 
 		if (actions.length > 0) {
 			executeActions(actions)

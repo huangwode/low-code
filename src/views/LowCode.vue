@@ -57,7 +57,7 @@
 
 			<div v-if="tabVal === 1">
 				<t-form :data="activePropsData">
-					<t-form-item v-for="(item, key) in activePropsData" :key="key" :rules="getPropsRules(item)" :name="key + '.value'" :label="item.label">
+					<t-form-item v-for="(item, key) in activePropsData" v-show="showComponent(item, key)" :key="key" :rules="getPropsRules(item)" :name="key + '.value'" :label="item.label">
 						<component :is="getPropsComponent(item)" v-model="item.value" v-bind="getPropsValue(item)" />
 					</t-form-item>
 				</t-form>
@@ -276,6 +276,16 @@ function savePage() {
 	console.log('页面数据=>', pageData)
 }
 
+const showComponent = computed(() => (prop: EProps, key: string) => {
+	if (key === 'visible') {
+		return true
+	} else {
+		const props = (activeComponent.value as ENode).props
+		const visible = props?.visible?.value && prop.visible
+		return !!visible
+	}
+})
+
 watch(
 	() => widgetIds.value.length,
 	val => {
@@ -349,6 +359,7 @@ watch(
 	padding-top: 60px;
 	.left {
 		width: 280px;
+		flex-shrink: 0;
 		margin-right: 8px;
 		background-color: #fff;
 		@include collapse-transition(width);
@@ -381,6 +392,7 @@ watch(
 	.right {
 		width: 300px;
 		padding: 20px;
+		flex-shrink: 0;
 		background-color: #fff;
 	}
 }

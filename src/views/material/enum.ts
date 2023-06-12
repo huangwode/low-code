@@ -9,4 +9,6 @@ export const componentsMap = {
 	'exe-select': 't-select',
 	'exe-icon-select': 'exe-icon-select',
 	'exe-number': 't-input-number',
+	'exe-form': 'exe-form',
+	'exe-table': 't-table',
 }
