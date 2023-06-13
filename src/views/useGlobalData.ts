@@ -2,9 +2,7 @@ import { ref } from 'vue'
 
 type TableData = Record<string, any>
 
-export let tableData = ref<TableData[]>(getDefaultData(6))
-export let tableColumns = ref(getDefaultColumns())
-export function getDefaultData(total: number) {
+function getDefaultData(total: number) {
 	const data = []
 	for (let i = 0; i < total; i++) {
 		data.push({
@@ -24,7 +22,7 @@ export function getDefaultData(total: number) {
 	return data
 }
 
-export function getDefaultColumns() {
+function getDefaultColumns() {
 	return [
 		{ colKey: 'applicant', title: '申请人', width: 100 },
 		{
@@ -65,4 +63,15 @@ export function getDefaultColumns() {
 		},
 		{ colKey: 'createTime', title: '申请时间' },
 	]
+}
+
+export default function () {
+	const tableDataRef = ref<TableData[]>(getDefaultData(6))
+	let tableColumns = ref(getDefaultColumns())
+	return {
+		tableDataRef,
+		tableColumns,
+		getDefaultColumns,
+		getDefaultData,
+	}
 }

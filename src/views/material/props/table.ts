@@ -1,9 +1,11 @@
 import { ExeButton, SizeOptions, COMPONENTTYPE, Eaction } from '../material-types'
-import { PropType } from 'vue'
+import { PropType, computed } from 'vue'
 
-import { tableData, tableColumns } from '../../global-data'
+import useGlobalData from '../../useGlobalData'
 // import { ErrorCircleFilledIcon, CheckCircleFilledIcon, CloseCircleFilledIcon } from 'tdesign-icons-vue-next';
 type size = keyof SizeOptions
+
+const globalData = useGlobalData()
 
 export default {
 	componentConfig: {
@@ -22,14 +24,14 @@ export default {
 		data: {
 			visible: false,
 			type: 'array',
-			value: tableData.value,
+			value: computed(() => globalData.tableDataRef.value).value,
 			label: '数据源',
 			// componentType: 'exe-select',
 		},
 		columns: {
 			visible: false,
 			type: 'array',
-			value: tableColumns.value,
+			value: globalData.tableColumns,
 			label: '数据源',
 			// componentType: 'exe-select',
 		},

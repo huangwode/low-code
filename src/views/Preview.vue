@@ -7,18 +7,29 @@
 	</div>
 </template>
 <script setup lang="ts">
-import { ref, reactive, computed } from 'vue'
+import exeForm from './material/components/setter/exe-form.vue'
+import exeIconSelect from './material/components/setter/exe-icon-select.vue'
+import { ref, reactive, computed, nextTick, getCurrentInstance } from 'vue'
 import { COMPONENT_TYPE_NAME, ControlGroup, EControl, ENode, EPage, EProps, Eaction, Eevent } from './material/material-types'
 
 import { componentsMap } from './material/enum'
 
 import { actionsMap } from './material/actions'
 import { cloneDeep } from 'lodash-es'
-import mitt from 'mitt'
+
+const bus = getCurrentInstance()?.appContext.config.globalProperties.$bus
+
+type Events = {
+	doSearch?: any
+	eventTrigger?: Eaction
+	doSearchTable?: any
+}
+
+// const bus: Emitter<Events> = mitt<Events>()
 
 const pageData = ref<EPage>()
 
-const emitter = mitt()
+// const bus = mitt()
 
 const nodes = computed(() => {
 	return pageData.value?.nodes ?? []
@@ -46,8 +57,26 @@ function changeValue(val: unknown, node: ENode) {
 
 initData()
 
+// 替换表格数据
+function setTableData(data: any) {
+	nodes.value.forEach(node => {
+		if (node.type === 'exe-table') {
+			;(node.props as EProps).data.value = data
+		}
+	})
+}
+
+bus.on('doSearch', (data: any) => {
+	console.warn('doSearch=>', data)
+	// alert('doSearch')
+	setTableData(data)
+})
+
 const getComponent = computed(() => (node: ENode) => {
 	const componentType = node.type
+	if (componentType === 'exe-form') {
+		return exeForm
+	}
 	return componentsMap[componentType]
 })
 
@@ -66,11 +95,11 @@ const materialProps = computed(() => (item: EProps) => {
 function emitActions(component: ENode) {
 	const actions = component.actions
 	if (actions?.events) {
-		emitter.emit('eventTrigger', actions)
+		bus.emit('eventTrigger', actions)
 	}
 }
 
-emitter.on('eventTrigger', actions => {
+bus.on('eventTrigger', (actions: Eaction) => {
 	console.log('监听actions', actions)
 	const events = (actions as Eaction).events
 	executeActions(cloneDeep(events))
@@ -87,10 +116,10 @@ async function executeActions(actions: Eaction['events']) {
 		console.log('currrentFun=>', currrentFun)
 
 		// 表单搜索
-		if (currrentFun === 'doSearch') {
-		} else {
-			await (currrentFun as any).apply(null, currentAction?.args)
-		}
+		// if (currrentFun === 'doSearch') {
+		// } else {
+		// }
+		await (currrentFun as any).apply(null, currentAction?.args)
 
 		if (actions.length > 0) {
 			executeActions(actions)
