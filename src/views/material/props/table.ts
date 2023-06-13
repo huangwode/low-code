@@ -1,13 +1,13 @@
 import { ExeButton, SizeOptions, COMPONENTTYPE, Eaction } from '../material-types'
 import { PropType } from 'vue'
 
-import { tableData, tableColumns } from './global-data'
+import { tableData, tableColumns } from '../../global-data'
 // import { ErrorCircleFilledIcon, CheckCircleFilledIcon, CloseCircleFilledIcon } from 'tdesign-icons-vue-next';
 type size = keyof SizeOptions
 
 export default {
 	componentConfig: {
-		group: COMPONENTTYPE.base,
+		group: COMPONENTTYPE.layout,
 		componentName: '表格',
 		componentType: 'exe-table',
 	},

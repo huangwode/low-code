@@ -16,28 +16,39 @@
 import { ref, reactive } from 'vue'
 import { MessagePlugin } from 'tdesign-vue-next'
 import mitt from 'mitt'
+import { tableData, getDefaultData } from '../../../global-data'
+import { cloneDeep } from 'lodash-es'
+
 const formData = ref({
 	name: '',
 })
+
+const initialTableData = getDefaultData(6)
 const emitter = mitt()
 const onReset = () => {
+	tableData.value = cloneDeep(initialTableData)
 	MessagePlugin.success('重置成功')
+}
+function filterTableData(name: string) {
+	tableData.value = initialTableData.filter(item => item.name?.include(name))
+	console.log('filterTableData =>', tableData)
 }
 
 const onSubmit = ({ validateResult, firstError }) => {
 	if (validateResult === true) {
 		const name = formData.value.name
-		if (!name) {
-			MessagePlugin.error('请输入姓名进行查询')
-			return
-		}
-		emitter.emit('eventTrigger', {
-			type: 'click',
-			Eevent: {
-				args: [name],
-				TriggerType: 'doSearch',
-			},
-		})
+		filterTableData(name)
+		// if (!name) {
+		// 	MessagePlugin.error('请输入姓名进行查询')
+		// 	return
+		// }
+		// emitter.emit('eventTrigger', {
+		// 	type: 'click',
+		// 	Eevent: {
+		// 		args: [name],
+		// 		TriggerType: 'doSearch',
+		// 	},
+		// })
 		MessagePlugin.success('提交成功')
 	} else {
 		console.log('Validate Errors: ', firstError, validateResult)

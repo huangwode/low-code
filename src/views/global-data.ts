@@ -1,8 +1,10 @@
 import { ref } from 'vue'
 
-export let tableData = ref(getDefaultData(6))
+type TableData = Record<string, any>
+
+export let tableData = ref<TableData[]>(getDefaultData(6))
 export let tableColumns = ref(getDefaultColumns())
-function getDefaultData(total: number) {
+export function getDefaultData(total: number) {
 	const data = []
 	for (let i = 0; i < total; i++) {
 		data.push({
@@ -22,7 +24,7 @@ function getDefaultData(total: number) {
 	return data
 }
 
-function getDefaultColumns() {
+export function getDefaultColumns() {
 	return [
 		{ colKey: 'applicant', title: '申请人', width: 100 },
 		{

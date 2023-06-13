@@ -172,6 +172,7 @@ async function handlePropsGroup() {
 	propList.value = list
 	const data = {}
 	list.forEach(item => {
+		console.log('item=>', item)
 		const group = item.componentConfig.group
 		if (!data[group]) {
 			data[group] = {
